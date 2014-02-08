@@ -1,0 +1,7 @@
+type=TEXT;value=Prvi primjer nekog teksta;validation_result=VALID;
+type=TEXT;value=Drugi primjer nekog teksta;validation_result=VALID;
+type=NUMBER;value=Prvi primjer nekog teksta;validation_result=INVALID;
+type=NUMBER;value=1234;validation_result=VALID;
+type=NUMBER;value=1234aaa;validation_result=INVALID;
+type=TEXT;value=1234aaa;validation_result=VALID;
+type=TEXT;value=1235;validation_result=VALID;
