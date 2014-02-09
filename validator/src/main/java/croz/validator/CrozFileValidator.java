@@ -5,10 +5,10 @@ package croz.validator;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import croz.bundle.ValidatorResources;
 import croz.parser.IOUtils;
 import croz.parser.ParseUtils;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -77,8 +77,11 @@ public class CrozFileValidator {
 
     private String validateRow(String type, String value) {
         boolean valid = false;
-        
-        
+
+        ValidatorResources bundle = new ValidatorResources("validators");
+        Validator validator = bundle.getValidator(type);
+        valid = validator.validate(value);
+
         return valid ? "VALID" : "INVALID";
     }
 
