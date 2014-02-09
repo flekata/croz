@@ -1,15 +1,20 @@
 package croz.validator;
 
-import croz.parser.IOUtils;
-import croz.parser.ParseUtils;
-import java.io.File;
-import java.util.List;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import croz.parser.IOUtils;
+import croz.parser.ParseUtils;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author stojan
@@ -18,38 +23,63 @@ public class CrozFileValidator {
 
     private static final String KEY_VALUE_SEPARATOR = "=";
     private static final String COLUMN_SEPARATOR = ";";
+    private static final String VALIDATION_RESULT = "validation_result";
 
     IOUtils io = new IOUtils();
     ParseUtils pu = new ParseUtils();
 
-    public File processValidation(String path, String fileName) {
+    public void processValidation(String path, String fileName, String resultsFileName) {
+        BufferedWriter writer = null;
+        try {
+            List<String> rows = io.readAllLines(path, fileName);
+            writer = io.openFileForWriting(
+                    path, resultsFileName, Charset.defaultCharset());
+            for (String row : rows) {
+                String validRowStatus = processRow(row);
+                writer.append(row)
+                        .append(VALIDATION_RESULT)
+                        .append(KEY_VALUE_SEPARATOR)
+                        .append(validRowStatus)
+                        .append(COLUMN_SEPARATOR);
+                writer.newLine();
+            }
+            io.finishWriting(writer);
 
-        List<String> rows = io.readAllLines(path, fileName);
-        for (String row : rows) {
-            processRow(row);
-
+        } catch (IOException ex) {
+            Logger.getLogger(CrozFileValidator.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                Logger.getLogger(CrozFileValidator.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-        return null;
     }
 
-    private void processRow(String row) {
+    // TODO: solve this using object mapper ??
+    private String processRow(String row) {
         try {
             String[] columns = pu.parse(row, COLUMN_SEPARATOR);
-            String type = columns[0];
-            String value = columns[1];
-            processColumn(type);
-            processColumn(value);
-            
-        } catch (IndexOutOfBoundsException e) {
+            String typeColumn = columns[0];
+            String valueColumn = columns[1];
+
+            String type = pu.parse(typeColumn, KEY_VALUE_SEPARATOR)[1];
+            String value = pu.parse(valueColumn, KEY_VALUE_SEPARATOR)[1];
+
+            return validateRow(type, value);
+
+        } catch (Exception e) {
             throw new FormatNotValidException(
-                    "File Structure is not valid: " + e.getMessage(), e);
+                    "Row format: " + row
+                    + ", is not valid: " + e.getMessage(), e);
         }
     }
-    
-    // TODO: solve this using object mapper ??
-    private void processColumn(String column) {
-        String[] parse = pu.parse(column, KEY_VALUE_SEPARATOR);
+
+    private String validateRow(String type, String value) {
+        boolean valid = false;
+        
+        
+        return valid ? "VALID" : "INVALID";
     }
 
 }

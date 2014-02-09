@@ -8,6 +8,8 @@ package croz.validator;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -16,6 +18,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import croz.parser.IOUtils;
+import java.io.IOException;
 
 /**
  *
@@ -49,14 +53,20 @@ public class CrozFileValidatorTest {
     }
 
     @Test
-    public void validateFile() {
+    public void validateFile() throws IOException {
         System.out.println("validateFile");
-//        String path = "/src/test/resources";
         String fileName = "FileToValidate.txt";
+        String resultsFileName = "ValidationResults.txt";
         String expectedResultsName = "ExpectedValidationResults.txt";
         CrozFileValidator validator = new CrozFileValidator();
-        File expResult = new File(path, expectedResultsName);
-        File resultsFile = validator.processValidation(path, fileName);
-        assertEquals(expResult, resultsFile);
+//        File expResult = new File(path, expectedResultsName);
+        validator.processValidation(path, fileName, resultsFileName);
+//        File resultsFile = new File(path, resultsFileName);
+
+        IOUtils ioUtils = new IOUtils();
+        List<String> expectedResult = ioUtils.readAllLines(path, expectedResultsName);
+        List<String> result = ioUtils.readAllLines(path, resultsFileName);
+        assertEquals(expectedResult, result);
+//        assertEquals(expResult, resultsFile);
     }
 }
