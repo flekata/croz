@@ -7,6 +7,7 @@ package croz.parser;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,15 +37,10 @@ public class IOUtils {
         return filearray;
     }
 
-    public List<String> readAllLines(String path, String name) {
-        try {
-            return Files.readAllLines(
-                    FileSystems.getDefault().getPath(path, name),
-                    Charset.defaultCharset());
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        return null;
+    public List<String> readAllLines(String path, String name) throws IOException {
+        return Files.readAllLines(
+                FileSystems.getDefault().getPath(path, name),
+                Charset.defaultCharset());
     }
 
     public List<String> readLargeFileLines(String name) {
@@ -87,14 +83,10 @@ public class IOUtils {
         return null;
     }
 
-    void writeFileBytes(String filename, String content) {
-        try {
-            Files.write(FileSystems.getDefault().getPath(".", filename),
-                    content.getBytes(),
-                    StandardOpenOption.CREATE);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+    public void writeFileBytes(String path, String filename, String content) throws IOException {
+        Files.write(FileSystems.getDefault().getPath(path, filename),
+                content.getBytes(),
+                StandardOpenOption.APPEND);
     }
 
     void writeFileBytesBuffered(String filename, String content) {
@@ -110,4 +102,24 @@ public class IOUtils {
             ioe.printStackTrace();
         }
     }
+
+    public Path createFile(String path, String fileName) throws IOException {
+        Path newFile = FileSystems.getDefault().getPath(path, fileName);
+        Files.deleteIfExists(newFile);
+        return Files.createFile(newFile);
+    }
+
+    public BufferedWriter openFileForWriting(String path, String fileName, Charset charset) throws IOException {
+//        Path newFile = createFile(path, fileName);
+        Path newFile = FileSystems.getDefault().getPath(path, fileName);
+        BufferedWriter writer
+                = Files.newBufferedWriter(newFile, charset);
+        return writer;
+    }
+
+    public void finishWriting(BufferedWriter writer) throws IOException {
+        writer.flush();
+        writer.close();
+    }
+
 }

@@ -5,8 +5,16 @@
  */
 package croz.parser;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -30,9 +38,17 @@ public class IOUtilsTest {
         "type=TEXT;value=1234aaa;",
         "type=TEXT;value=1235;"
     };
+    private static String path;
 
     @BeforeClass
     public static void setUpClass() {
+        try {
+            URL classpath = IOUtilsTest.class.getResource(".");
+            File classpathFile = new File(classpath.toURI());
+            path = classpathFile.getAbsolutePath();
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(IOUtilsTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @AfterClass
@@ -65,11 +81,11 @@ public class IOUtilsTest {
 
     /**
      * Test of readAllLines method, of class ParserUtils.
+     * @throws java.io.IOException
      */
     @Test
-    public void testReadAllLines() {
+    public void testReadAllLines() throws IOException {
         System.out.println("readAllLines");
-        String path = "C:\\dev\\sources\\cro\\croz\\parser\\src\\test\\resources";
         String fileName = "FileToValidate.txt";
         IOUtils instance = new IOUtils();
         List<String> result = instance.readAllLines(path, fileName);
@@ -110,17 +126,26 @@ public class IOUtilsTest {
 
     /**
      * Test of writeFileBytes method, of class ParserUtils.
+     * @throws java.io.IOException
      */
     @Test
-    @Ignore
-    public void testWriteFileBytes() {
+    public void testWriteFileBytes() throws IOException {
         System.out.println("writeFileBytes");
-        String filename = "";
-        String content = "";
+        String filename = "ValidationResults.txt";
         IOUtils instance = new IOUtils();
-        instance.writeFileBytes(filename, content);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        BufferedWriter writer = instance.openFileForWriting(
+                path, filename, Charset.defaultCharset());
+        for (String content : expectedLines) {
+            writer.append(content);
+            writer.newLine();
+        }
+        instance.finishWriting(writer);
+        
+        // check the written content
+        List<String> result = instance.readAllLines(path, filename);
+        assertEquals(Arrays.asList(expectedLines), result);
+                
     }
 
     /**
