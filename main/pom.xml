@@ -95,5 +95,5 @@
     
         </plugins>
     </build>
-    
+    <name>05 main</name>
 </project>

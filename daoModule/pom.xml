@@ -22,5 +22,5 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    
+    <name>04 daoModule</name>
 </project>

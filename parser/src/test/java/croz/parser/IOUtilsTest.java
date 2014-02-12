@@ -64,23 +64,8 @@ public class IOUtilsTest {
     }
 
     /**
-     * Test of readSmallFileBytes method, of class ParserUtils.
-     */
-    @Test
-    @Ignore
-    public void testReadSmallFileBytes() {
-        System.out.println("readSmallFileBytes");
-        String name = "";
-        IOUtils instance = new IOUtils();
-        byte[] expResult = null;
-        byte[] result = instance.readSmallFileBytes(name);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of readAllLines method, of class ParserUtils.
+     *
      * @throws java.io.IOException
      */
     @Test
@@ -97,35 +82,21 @@ public class IOUtilsTest {
      */
     @Test
     @Ignore
-    public void testReadLargeFileLines() {
+    public void testReadAllLinesLargeFile() throws IOException {
         System.out.println("readLargeFileLines");
         String name = "";
         IOUtils instance = new IOUtils();
         List<String> expResult = null;
-        List<String> result = instance.readLargeFileLines(name);
+        instance.readAllLinesLargeFile(path, name,
+                new TestLineProcessor()
+        );
+        List<String> result = null;
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of readLargeFileLinesMixed method, of class ParserUtils.
-     */
-    @Test
-    @Ignore
-    public void testReadLargeFileLinesMixed() {
-        System.out.println("readLargeFileLinesMixed");
-        String name = "";
-        IOUtils instance = new IOUtils();
-        List<String> expResult = null;
-        List<String> result = instance.readLargeFileLinesMixed(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of writeFileBytes method, of class ParserUtils.
+     *
      * @throws java.io.IOException
      */
     @Test
@@ -133,7 +104,7 @@ public class IOUtilsTest {
         System.out.println("writeFileBytes");
         String filename = "ValidationResults.txt";
         IOUtils instance = new IOUtils();
-        
+
         BufferedWriter writer = instance.openFileForWriting(
                 path, filename, Charset.defaultCharset());
         for (String content : expectedLines) {
@@ -141,26 +112,20 @@ public class IOUtilsTest {
             writer.newLine();
         }
         instance.finishWriting(writer);
-        
+
         // check the written content
         List<String> result = instance.readAllLines(path, filename);
         assertEquals(Arrays.asList(expectedLines), result);
-                
+
     }
 
-    /**
-     * Test of writeFileBytesBuffered method, of class ParserUtils.
-     */
-    @Test
-    @Ignore
-    public void testWriteFileBytesBuffered() {
-        System.out.println("writeFileBytesBuffered");
-        String filename = "";
-        String content = "";
-        IOUtils instance = new IOUtils();
-        instance.writeFileBytesBuffered(filename, content);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    private class TestLineProcessor implements LineProcessor {
+
+        @Override
+        public void processLine(String line) {
+            // parse each line ...
+        }
+
     }
 
 }
