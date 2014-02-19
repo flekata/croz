@@ -27,6 +27,7 @@ public class CrozFileValidator {
 
     IOUtils io = new IOUtils();
     ParseUtils pu = new ParseUtils();
+    ValidatorResources bundle = new ValidatorResources("validators");
 
     public void processValidation(String path, String fileName, String resultsFileName) {
         BufferedWriter writer = null;
@@ -76,11 +77,9 @@ public class CrozFileValidator {
     }
 
     private String validateRow(String type, String value) {
-        boolean valid = false;
-
-        ValidatorResources bundle = new ValidatorResources("validators");
+        
         Validator validator = bundle.getValidator(type);
-        valid = validator.validate(value);
+        boolean valid = validator.validate(value);
 
         return valid ? "VALID" : "INVALID";
     }
